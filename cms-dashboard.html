@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenuityWeb CMS Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1e40af;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--dark-color) 0%, #0f172a 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item.active {
+            background-color: rgba(59, 130, 246, 0.2);
+            border-left-color: var(--primary-color);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .topbar {
+            background-color: white;
+            padding: 15px 25px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+
+        .content-area {
+            padding: 25px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .content-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .image-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 6px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary-color);
+        }
+
+        .image-preview {
+            max-width: 200px;
+            margin-top: 15px;
+            border-radius: 6px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background-color: var(--success-color);
+        }
+
+        .toast.error {
+            background-color: var(--danger-color);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .preview-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #475569;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-edit {
+            background: #fef3c7;
+            color: #d97706;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Skeleton Loading Animation */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .skeleton-content {
+            display: block;
+        }
+
+        body.loaded .skeleton-content {
+            display: none;
+        }
+
+        body.loaded .actual-content {
+            display: block;
+        }
+
+        .actual-content {
+            display: none;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar {
+                padding: 10px 15px;
+            }
+
+            .content-area {
+                padding: 10px;
+            }
+
+            .content-section {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Dashboard -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <span class="logo-text">GenuityWeb CMS</span>
+                </div>
+            </div>
+
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span class="menu-text">Dashboard</span>
+                </div>
+                <div class="menu-item" data-section="slider">
+                    <i class="fas fa-images"></i>
+                    <span class="menu-text">Slider</span>
+                </div>
+                <div class="menu-item" data-section="banner">
+                    <i class="fas fa-image"></i>
+                    <span class="menu-text">Banner</span>
+                </div>
+                <div class="menu-item" data-section="services">
+                    <i class="fas fa-cogs"></i>
+                    <span class="menu-text">Services</span>
+                </div>
+                <div class="menu-item" data-section="projects">
+                    <i class="fas fa-project-diagram"></i>
+                    <span class="menu-text">Projects</span>
+                </div>
+                <div class="menu-item" data-section="counters">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="menu-text">Counters</span>
+                </div>
+                <div class="menu-item" data-section="team">
+                    <i class="fas fa-users"></i>
+                    <span class="menu-text">Team</span>
+                </div>
+                <div class="menu-item" data-section="location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="menu-text">Location</span>
+                </div>
+                <div class="menu-item" data-section="contact">
+                    <i class="fas fa-envelope"></i>
+                    <span class="menu-text">Contact</span>
+                </div>
+                <div class="menu-item" data-section="logo">
+                    <i class="fas fa-palette"></i>
+                    <span class="menu-text">Logo & Colors</span>
+                </div>
+                <div class="menu-item" id="syncBtn">
+                    <i class="fas fa-sync-alt"></i>
+                    <span class="menu-text">Sync to Website</span>
+                </div>
+                <div class="menu-item" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="menu-text">Logout</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <div class="topbar">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="page-title" id="pageTitle">Dashboard</div>
+                <div class="user-info">
+                    <div class="user-avatar">SA</div>
+                    <div>
+                        <div class="user-name">Saleem Ahmad</div>
+                        <div class="user-role">Admin</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <div class="content-section active" id="dashboard-section">
+                    <div class="skeleton-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="skeleton" style="width: 50px; height: 50px; border-radius: 10px;"></div>
+                                <div class="stat-info">
+                                    <div class="skeleton" style="height: 24px; width: 80px; margin-bottom: 8px;"></div>
+                                    <div class="skeleton" style="height: 16px; width: 100px;"></div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="skeleton" style="width: 50px; height: 50px; border-radius: 10px;"></div>
+                                <div class="stat-info">
+                                    <div class="skeleton" style="height: 24px; width: 80px; margin-bottom: 8px;"></div>
+                                    <div class="skeleton" style="height: 16px; width: 100px;"></div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="skeleton" style="width: 50px; height: 50px; border-radius: 10px;"></div>
+                                <div class="stat-info">
+                                    <div class="skeleton" style="height: 24px; width: 80px; margin-bottom: 8px;"></div>
+                                    <div class="skeleton" style="height: 16px; width: 100px;"></div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="skeleton" style="width: 50px; height: 50px; border-radius: 10px;"></div>
+                                <div class="stat-info">
+                                    <div class="skeleton" style="height: 24px; width: 80px; margin-bottom: 8px;"></div>
+                                    <div class="skeleton" style="height: 16px; width: 100px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="actual-content">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon"
+                                    style="background: #dbeafe; color: #3b82f6; width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="pageViews">5,248</h3>
+                                    <p>Page Views</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"
+                                    style="background: #d1fae5; color: #10b981; width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="visitors">1,284</h3>
+                                    <p>Visitors</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"
+                                    style="background: #fed7aa; color: #f59e0b; width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                    <i class="fas fa-project-diagram"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="projectsCount">24</h3>
+                                    <p>Projects</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"
+                                    style="background: #fecaca; color: #ef4444; width: 50px; height: 50px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="messagesCount">56</h3>
+                                    <p>New Messages</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="content-section">
+                            <div class="section-header">
+                                <div class="section-title">Quick Actions</div>
+                            </div>
+                            <div
+                                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                                <button class="btn btn-primary" onclick="switchSection('slider')">
+                                    <i class="fas fa-edit"></i> Edit Slider
+                                </button>
+                                <button class="btn btn-primary" onclick="switchSection('services')">
+                                    <i class="fas fa-cogs"></i> Manage Services
+                                </button>
+                                <button class="btn btn-primary" onclick="switchSection('projects')">
+                                    <i class="fas fa-project-diagram"></i> Update Projects
+                                </button>
+                                <button class="btn btn-primary" onclick="switchSection('team')">
+                                    <i class="fas fa-users"></i> Edit Team
+                                </button>
+                                <button class="btn btn-primary" onclick="switchSection('location')">
+                                    <i class="fas fa-map-marker-alt"></i> Update Location
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slider Section -->
+                <div class="content-section" id="slider-section">
+                    <div class="section-header">
+                        <div class="section-title">Slider Management</div>
+                        <button class="btn btn-primary" id="saveSliderBtn">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab active" data-tab="slide1">Slide 1</div>
+                        <div class="tab" data-tab="slide2">Slide 2</div>
+                        <div class="tab" data-tab="slide3">Slide 3</div>
+                    </div>
+
+                    <!-- Slide 1 -->
+                    <div class="tab-content active" id="slide1-content">
+                        <div class="form-group">
+                            <label class="form-label">Slide 1 Title</label>
+                            <input type="text" class="form-control" id="slide1Title" value="We Reshape Your Future">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Slide 1 Description</label>
+                            <textarea class="form-control" id="slide1Desc"
+                                rows="3">Empowering your business with future-ready digital solutions - built for growth, driven by innovation.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Slide 1 Button Text</label>
+                            <input type="text" class="form-control" id="slide1Btn" value="GET IN TOUCH">
+                        </div>
+                    </div>
+
+                    <!-- Slide 2 -->
+                    <div class="tab-content" id="slide2-content">
+                        <div class="form-group">
+                            <label class="form-label">Slide 2 Title</label>
+                            <input type="text" class="form-control" id="slide2Title"
+                                value="Strategic Technology For Your Business Growth">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Slide 2 Description</label>
+                            <textarea class="form-control" id="slide2Desc"
+                                rows="3">We deliver intelligent, scalable, and purpose-driven tech solutions that align with your business goals.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Slide 2 Button Text</label>
+                            <input type="text" class="form-control" id="slide2Btn" value="GET IN TOUCH">
+                        </div>
+                    </div>
+
+                    <!-- Slide 3 -->
+                    <div class="tab-content" id="slide3-content">
+                        <div class="form-group">
+                            <label class="form-label">Slide 3 Title</label>
+                            <input type="text" class="form-control" id="slide3Title"
+                                value="Smart Tech Strategies To Accelerate Your Growth">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Slide 3 Description</label>
+                            <textarea class="form-control" id="slide3Desc"
+                                rows="3">Unlock rapid growth with intelligent, scalable tech solutions-designed to streamline operations, boost efficiency, and future-proof your business.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Slide 3 Button Text</label>
+                            <input type="text" class="form-control" id="slide3Btn" value="GET IN TOUCH">
+                        </div>
+                    </div>
+
+                    <div class="preview-section">
+                        <div class="preview-title">Live Preview</div>
+                        <div class="preview-content">
+                            <strong id="previewSliderTitle">We Reshape Your Future</strong>
+                            <p id="previewSliderDesc" style="margin-top: 10px; color: #666;">Empowering your business
+                                with future-ready digital solutions - built for growth, driven by innovation.</p>
+                            <button class="btn btn-primary" style="margin-top: 10px;">GET IN TOUCH</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Section -->
+                <div class="content-section" id="banner-section">
+                    <div class="section-header">
+                        <div class="section-title">Banner Management</div>
+                        <button class="btn btn-primary" id="saveBannerBtn">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Banner Title</label>
+                        <input type="text" class="form-control" id="bannerTitle"
+                            value="Let's Develop Your Next Great App!">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Banner Description</label>
+                        <textarea class="form-control" id="bannerDesc"
+                            rows="3">Do you need a unique software solution for your company? We know how to help you!.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Button Text</label>
+                        <input type="text" class="form-control" id="bannerBtn" value="Explore Now">
+                    </div>
+
+                    <div class="preview-section">
+                        <div class="preview-title">Live Preview</div>
+                        <div class="preview-content">
+                            <strong id="previewBannerTitle">Let's Develop Your Next Great App!</strong>
+                            <p id="previewBannerDesc" style="margin-top: 10px; color: #666;">Do you need a unique
+                                software solution for your company? We know how to help you!.</p>
+                            <button class="btn btn-primary" style="margin-top: 10px;">Explore Now</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Section -->
+                <div class="content-section" id="services-section">
+                    <div class="section-header">
+                        <div class="section-title">Services Management</div>
+                        <button class="btn btn-primary" id="addServiceBtn">
+                            <i class="fas fa-plus"></i> Add New Service
+                        </button>
+                    </div>
+
+                    <div id="servicesContainer">
+                        <!-- Services will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Projects Section -->
+                <div class="content-section" id="projects-section">
+                    <div class="section-header">
+                        <div class="section-title">Projects Management</div>
+                        <button class="btn btn-primary" id="addProjectBtn">
+                            <i class="fas fa-plus"></i> Add New Project
+                        </button>
+                    </div>
+
+                    <div id="projectsContainer">
+                        <!-- Projects will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Counters Section -->
+                <div class="content-section" id="counters-section">
+                    <div class="section-header">
+                        <div class="section-title">Counter Management</div>
+                        <button class="btn btn-primary" id="saveCountersBtn">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Apps Developed Count</label>
+                            <input type="number" class="form-control" id="appsCount" value="60">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Expert Consultants Count</label>
+                            <input type="number" class="form-control" id="consultantsCount" value="15">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Awards Won Count</label>
+                            <input type="number" class="form-control" id="awardsCount" value="25">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Happy Clients Count</label>
+                            <input type="number" class="form-control" id="clientsCount" value="120">
+                        </div>
+                    </div>
+
+                    <div class="preview-section">
+                        <div class="preview-title">Live Preview</div>
+                        <div class="preview-content">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <strong>Apps Developed:</strong> <span id="previewAppsCount">60+</span>
+                                </div>
+                                <div>
+                                    <strong>Expert Consultants:</strong> <span id="previewConsultantsCount">15</span>
+                                </div>
+                                <div>
+                                    <strong>Awards Won:</strong> <span id="previewAwardsCount">25</span>
+                                </div>
+                                <div>
+                                    <strong>Happy Clients:</strong> <span id="previewClientsCount">120</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Section -->
+                <div class="content-section" id="team-section">
+                    <div class="section-header">
+                        <div class="section-title">Team Management</div>
+                        <button class="btn btn-primary" id="addTeamMemberBtn">
+                            <i class="fas fa-plus"></i> Add Team Member
+                        </button>
+                    </div>
+
+                    <div id="teamContainer">
+                        <!-- Team members will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Location Section -->
+                <div class="content-section" id="location-section">
+                    <div class="section-header">
+                        <div class="section-title">Location Management</div>
+                        <button class="btn btn-primary" id="saveLocationBtn">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Office Address</label>
+                            <textarea class="form-control" id="officeAddress"
+                                rows="3">Suite 404, Business Plaza, I.I. Chundrigar Road, Karachi, Pakistan</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="officePhone" value="+92 21 12345678">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="officeEmail" value="info@genuityweb.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Business Hours</label>
+                            <textarea class="form-control" id="officeHours" rows="3">Monday - Friday: 9:00 AM - 6:00 PM
+Saturday: 10:00 AM - 2:00 PM
+Sunday: Closed</textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Google Maps Embed URL</label>
+                        <textarea class="form-control" id="mapsEmbedUrl"
+                            rows="4">https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.267395392741!2d67.028246775337!3d24.814812277967525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33dacdacea6a5%3A0x82c0d7c6615bd569!2sI.I.%20Chundrigar%20Rd%2C%20Karachi%20City%2C%20Sindh%2C%20Pakistan!5e0!3m2!1sen!2s!4v1701583322660!5m2!1sen!2s</textarea>
+                        <small class="form-text">Get this from Google Maps → Share → Embed a map</small>
+                    </div>
+
+                    <div class="preview-section">
+                        <div class="preview-title">Live Preview</div>
+                        <div class="preview-content">
+                            <div class="space-y-2">
+                                <div><strong>Address:</strong> <span id="previewAddress">Suite 404, Business Plaza, I.I.
+                                        Chundrigar Road, Karachi, Pakistan</span></div>
+                                <div><strong>Phone:</strong> <span id="previewPhone">+92 21 12345678</span></div>
+                                <div><strong>Email:</strong> <span id="previewEmail">info@genuityweb.com</span></div>
+                                <div><strong>Hours:</strong> <span id="previewHours">Monday - Friday: 9:00 AM - 6:00 PM,
+                                        Saturday: 10:00 AM - 2:00 PM, Sunday: Closed</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Section -->
+                <div class="content-section" id="contact-section">
+                    <div class="section-header">
+                        <div class="section-title">Contact Information</div>
+                        <button class="btn btn-primary" id="saveContactBtn">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Company Name</label>
+                            <input type="text" class="form-control" id="companyName" value="GenuityWeb">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="companyEmail" value="info@genuityweb.com">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="companyPhone" value="+1 (555) 123-4567">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <input type="text" class="form-control" id="companyAddress"
+                                value="123 Business Ave, Suite 100">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Footer Description</label>
+                        <textarea class="form-control" id="footerDesc"
+                            rows="3">We deliver intelligent, scalable, and purpose-driven tech solutions that align with your business goals.</textarea>
+                    </div>
+                </div>
+
+                <!-- Logo & Colors Section -->
+                <div class="content-section" id="logo-section">
+                    <div class="section-header">
+                        <div class="section-title">Logo & Brand Colors</div>
+                        <button class="btn btn-primary" id="saveLogoBtn">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Company Logo Text</label>
+                            <input type="text" class="form-control" id="logoText" value="GenuityWeb">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Primary Color</label>
+                            <input type="color" class="form-control" id="primaryColor" value="#3b82f6">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Secondary Color</label>
+                            <input type="color" class="form-control" id="secondaryColor" value="#1e40af">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Accent Color</label>
+                            <input type="color" class="form-control" id="accentColor" value="#10b981">
+                        </div>
+                    </div>
+
+                    <div class="preview-section">
+                        <div class="preview-title">Brand Preview</div>
+                        <div class="preview-content">
+                            <div
+                                style="display: flex; align-items: center; gap: 15px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                                <div
+                                    style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                    GW
+                                </div>
+                                <div>
+                                    <h3 style="margin: 0; color: #1e293b;" id="previewLogoText">GenuityWeb</h3>
+                                    <p style="margin: 5px 0 0 0; color: #64748b;">Your Technology Partner</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                                <div style="width: 30px; height: 30px; background: #3b82f6; border-radius: 4px;"
+                                    title="Primary Color"></div>
+                                <div style="width: 30px; height: 30px; background: #1e40af; border-radius: 4px;"
+                                    title="Secondary Color"></div>
+                                <div style="width: 30px; height: 30px; background: #10b981; border-radius: 4px;"
+                                    title="Accent Color"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast hidden" id="toast"></div>
+
+    <!-- Service Modal -->
+    <div class="modal hidden" id="serviceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="serviceModalTitle">Add New Service</h3>
+                <button class="close-modal" id="closeServiceModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="serviceForm">
+                    <input type="hidden" id="serviceId">
+                    <div class="form-group">
+                        <label class="form-label">Service Title</label>
+                        <input type="text" class="form-control" id="serviceTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Service Description</label>
+                        <textarea class="form-control" id="serviceDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Icon Class (FontAwesome)</label>
+                        <input type="text" class="form-control" id="serviceIcon" placeholder="fas fa-cog" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Background Color</label>
+                        <input type="color" class="form-control" id="serviceColor" value="#3b82f6">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelServiceBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveServiceBtn">Save Service</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div class="modal hidden" id="projectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="projectModalTitle">Add New Project</h3>
+                <button class="close-modal" id="closeProjectModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="projectForm">
+                    <input type="hidden" id="projectId">
+                    <div class="form-group">
+                        <label class="form-label">Project Name</label>
+                        <input type="text" class="form-control" id="projectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-control" id="projectCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="mobile">Mobile Apps</option>
+                            <option value="software">Custom Software</option>
+                            <option value="qa">QA & Testing</option>
+                            <option value="ux">UX and Design</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" id="projectDescription" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input type="text" class="form-control" id="projectImage"
+                            placeholder="https://example.com/image.jpg">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelProjectBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveProjectBtn">Save Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Modal -->
+    <div class="modal hidden" id="teamModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="teamModalTitle">Add Team Member</h3>
+                <button class="close-modal" id="closeTeamModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="teamForm">
+                    <input type="hidden" id="teamMemberId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="memberName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Position</label>
+                            <input type="text" class="form-control" id="memberPosition" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Bio/Description</label>
+                        <textarea class="form-control" id="memberBio" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Avatar URL</label>
+                        <input type="text" class="form-control" id="memberAvatar"
+                            placeholder="https://example.com/avatar.jpg">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="cancelTeamBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveTeamMemberBtn">Save Member</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complete Data Structure
+        let websiteData = {
+            // Slider Data
+            slider: {
+                slide1: {
+                    title: "We Reshape Your Future",
+                    description: "Empowering your business with future-ready digital solutions - built for growth, driven by innovation.",
+                    buttonText: "GET IN TOUCH"
+                },
+                slide2: {
+                    title: "Strategic Technology For Your Business Growth",
+                    description: "We deliver intelligent, scalable, and purpose-driven tech solutions that align with your business goals.",
+                    buttonText: "GET IN TOUCH"
+                },
+                slide3: {
+                    title: "Smart Tech Strategies To Accelerate Your Growth",
+                    description: "Unlock rapid growth with intelligent, scalable tech solutions-designed to streamline operations, boost efficiency, and future-proof your business.",
+                    buttonText: "GET IN TOUCH"
+                }
+            },
+
+            // Banner Data
+            banner: {
+                title: "Let's Develop Your Next Great App!",
+                description: "Do you need a unique software solution for your company? We know how to help you!.",
+                buttonText: "Explore Now"
+            },
+
+            // Services Data
+            services: [
+                {
+                    id: 1,
+                    title: "PROJECT MANAGEMENT",
+                    description: "Project planning, scheduling, and monitoring. Portfolio & program management consulting.",
+                    icon: "fas fa-project-diagram",
+                    color: "#3b82f6"
+                },
+                {
+                    id: 2,
+                    title: "IT CONSULTING",
+                    description: "Business/System analysis, ERP implementation, Process optimization and digital transformation.",
+                    icon: "fas fa-laptop-code",
+                    color: "#8b5cf6"
+                },
+                {
+                    id: 3,
+                    title: "WEB DEVELOPMENT",
+                    description: "Custom web applications, e-commerce solutions, and responsive website design.",
+                    icon: "fas fa-code",
+                    color: "#10b981"
+                }
+            ],
+
+            // Projects Data
+            projects: [
+                {
+                    id: 1,
+                    name: "FinStep Mobile App",
+                    category: "mobile",
+                    description: "We work hard on every app to deliver top-notch features with great UI that you won't find anywhere else.",
+                    image: "./grid-gallery-2-1200x800-original.jpg"
+                },
+                {
+                    id: 2,
+                    name: "Q-Manage Software",
+                    category: "software",
+                    description: "Enterprise management solution with advanced analytics and reporting features.",
+                    image: "./grid-gallery-7-1200x800-original.jpg"
+                }
+            ],
+
+            // Counters Data
+            counters: {
+                apps: 60,
+                consultants: 15,
+                awards: 25,
+                clients: 120
+            },
+
+            // Team Data
+            team: [
+                {
+                    id: 1,
+                    name: "Saleem Ahmad",
+                    position: "Managing Director",
+                    bio: "Leading the company with vision and expertise. Over 10 years of experience in technology consulting.",
+                    avatar: "./man avatar.png"
+                },
+                {
+                    id: 2,
+                    name: "Nafeez Ahmmad",
+                    position: "Business Head",
+                    bio: "Driving business growth and strategy. Specialized in digital transformation and client relationships.",
+                    avatar: "./man avatar.png"
+                }
+            ],
+
+            // Location Data
+            location: {
+                address: "Suite 404, Business Plaza, I.I. Chundrigar Road, Karachi, Pakistan",
+                phone: "+92 21 12345678",
+                email: "info@genuityweb.com",
+                hours: "Monday - Friday: 9:00 AM - 6:00 PM\nSaturday: 10:00 AM - 2:00 PM\nSunday: Closed",
+                mapsUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.267395392741!2d67.028246775337!3d24.814812277967525!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33dacdacea6a5%3A0x82c0d7c6615bd569!2sI.I.%20Chundrigar%20Rd%2C%20Karachi%20City%2C%20Sindh%2C%20Pakistan!5e0!3m2!1sen!2s!4v1701583322660!5m2!1sen!2s"
+            },
+
+            // Contact Data
+            contact: {
+                companyName: "GenuityWeb",
+                email: "info@genuityweb.com",
+                phone: "+1 (555) 123-4567",
+                address: "123 Business Ave, Suite 100",
+                footerDesc: "We deliver intelligent, scalable, and purpose-driven tech solutions that align with your business goals."
+            },
+
+            // Brand Data
+            brand: {
+                logoText: "GenuityWeb",
+                primaryColor: "#3b82f6",
+                secondaryColor: "#1e40af",
+                accentColor: "#10b981"
+            }
+        };
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log("Dashboard initializing...");
+
+            // Check authentication
+            if (!localStorage.getItem('cmsLoggedIn')) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Start loading simulation
+            simulateDashboardLoading();
+
+            // Load data and setup
+            loadData();
+            setupEventListeners();
+            renderServices();
+            renderProjects();
+            renderTeam();
+            setupLivePreview();
+
+            console.log("Dashboard initialized successfully!");
+        });
+
+        function simulateDashboardLoading() {
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+                console.log("Dashboard content loaded");
+            }, 2000);
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const savedData = localStorage.getItem('genuitywebData');
+            if (savedData) {
+                try {
+                    websiteData = JSON.parse(savedData);
+                    updateFormFields();
+                    console.log("Data loaded from localStorage");
+                } catch (error) {
+                    console.error("Error loading data:", error);
+                }
+            } else {
+                console.log("No saved data found, using default data");
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            try {
+                localStorage.setItem('genuitywebData', JSON.stringify(websiteData));
+                console.log("Data saved successfully");
+
+                // Trigger website update
+                triggerWebsiteUpdate();
+
+                return true;
+            } catch (error) {
+                console.error("Error saving data:", error);
+                showToast('Error saving data!', 'error');
+                return false;
+            }
+        }
+
+        // Update all form fields with current data
+        function updateFormFields() {
+            // Slider
+            if (document.getElementById('slide1Title')) {
+                document.getElementById('slide1Title').value = websiteData.slider.slide1.title;
+                document.getElementById('slide1Desc').value = websiteData.slider.slide1.description;
+                document.getElementById('slide1Btn').value = websiteData.slider.slide1.buttonText;
+
+                document.getElementById('slide2Title').value = websiteData.slider.slide2.title;
+                document.getElementById('slide2Desc').value = websiteData.slider.slide2.description;
+                document.getElementById('slide2Btn').value = websiteData.slider.slide2.buttonText;
+
+                document.getElementById('slide3Title').value = websiteData.slider.slide3.title;
+                document.getElementById('slide3Desc').value = websiteData.slider.slide3.description;
+                document.getElementById('slide3Btn').value = websiteData.slider.slide3.buttonText;
+            }
+
+            // Banner
+            if (document.getElementById('bannerTitle')) {
+                document.getElementById('bannerTitle').value = websiteData.banner.title;
+                document.getElementById('bannerDesc').value = websiteData.banner.description;
+                document.getElementById('bannerBtn').value = websiteData.banner.buttonText;
+            }
+
+            // Counters
+            if (document.getElementById('appsCount')) {
+                document.getElementById('appsCount').value = websiteData.counters.apps;
+                document.getElementById('consultantsCount').value = websiteData.counters.consultants;
+                document.getElementById('awardsCount').value = websiteData.counters.awards;
+                document.getElementById('clientsCount').value = websiteData.counters.clients;
+            }
+
+            // Location
+            if (document.getElementById('officeAddress')) {
+                document.getElementById('officeAddress').value = websiteData.location.address;
+                document.getElementById('officePhone').value = websiteData.location.phone;
+                document.getElementById('officeEmail').value = websiteData.location.email;
+                document.getElementById('officeHours').value = websiteData.location.hours;
+                document.getElementById('mapsEmbedUrl').value = websiteData.location.mapsUrl;
+            }
+
+            // Contact
+            if (document.getElementById('companyName')) {
+                document.getElementById('companyName').value = websiteData.contact.companyName;
+                document.getElementById('companyEmail').value = websiteData.contact.email;
+                document.getElementById('companyPhone').value = websiteData.contact.phone;
+                document.getElementById('companyAddress').value = websiteData.contact.address;
+                document.getElementById('footerDesc').value = websiteData.contact.footerDesc;
+            }
+
+            // Brand
+            if (document.getElementById('logoText')) {
+                document.getElementById('logoText').value = websiteData.brand.logoText;
+                document.getElementById('primaryColor').value = websiteData.brand.primaryColor;
+                document.getElementById('secondaryColor').value = websiteData.brand.secondaryColor;
+                document.getElementById('accentColor').value = websiteData.brand.accentColor;
+            }
+
+            // Update previews
+            updateLocationPreview();
+            updateCounterPreview();
+            updateBrandPreview();
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            console.log("Setting up event listeners...");
+
+            // Mobile toggle
+            const mobileToggle = document.getElementById('mobileToggle');
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function () {
+                    document.getElementById('sidebar').classList.toggle('active');
+                });
+            }
+
+            // Navigation
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    if (this.id === 'syncBtn') {
+                        syncToWebsite();
+                        return;
+                    }
+
+                    if (this.id === 'logoutBtn') {
+                        logout();
+                        return;
+                    }
+
+                    const section = this.getAttribute('data-section');
+                    if (section) {
+                        switchSection(section);
+                    }
+
+                    // Close sidebar on mobile after selection
+                    if (window.innerWidth <= 1024) {
+                        document.getElementById('sidebar').classList.remove('active');
+                    }
+                });
+            });
+
+            // Save buttons
+            const saveButtons = {
+                'saveSliderBtn': saveSlider,
+                'saveBannerBtn': saveBanner,
+                'saveCountersBtn': saveCounters,
+                'saveLocationBtn': saveLocation,
+                'saveContactBtn': saveContact,
+                'saveLogoBtn': saveLogo
+            };
+
+            Object.keys(saveButtons).forEach(btnId => {
+                const button = document.getElementById(btnId);
+                if (button) {
+                    button.addEventListener('click', saveButtons[btnId]);
+                }
+            });
+
+            // Add buttons
+            const addServiceBtn = document.getElementById('addServiceBtn');
+            if (addServiceBtn) {
+                addServiceBtn.addEventListener('click', () => openServiceModal());
+            }
+
+            const addProjectBtn = document.getElementById('addProjectBtn');
+            if (addProjectBtn) {
+                addProjectBtn.addEventListener('click', () => openProjectModal());
+            }
+
+            const addTeamMemberBtn = document.getElementById('addTeamMemberBtn');
+            if (addTeamMemberBtn) {
+                addTeamMemberBtn.addEventListener('click', () => openTeamModal());
+            }
+
+            // Tab functionality
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function () {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+
+            // Real-time preview updates
+            setupLivePreview();
+
+            console.log("Event listeners setup complete");
+        }
+
+        // Switch between sections
+        function switchSection(section) {
+            console.log("Switching to section:", section);
+
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+
+            // Remove active from all menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show target section
+            const targetSection = document.getElementById(section + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Activate menu item
+            const menuItem = document.querySelector(`[data-section="${section}"]`);
+            if (menuItem) {
+                menuItem.classList.add('active');
+            }
+
+            // Update page title
+            const pageTitle = document.getElementById('pageTitle');
+            if (pageTitle && menuItem) {
+                const menuText = menuItem.querySelector('.menu-text');
+                if (menuText) {
+                    pageTitle.textContent = menuText.textContent;
+                }
+            }
+        }
+
+        // Tab switching for slider
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            const targetContent = document.getElementById(tabId + '-content');
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+
+            // Activate selected tab
+            const targetTab = document.querySelector(`[data-tab="${tabId}"]`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        }
+
+        // Save functions for each section
+        function saveSlider() {
+            websiteData.slider.slide1.title = document.getElementById('slide1Title').value;
+            websiteData.slider.slide1.description = document.getElementById('slide1Desc').value;
+            websiteData.slider.slide1.buttonText = document.getElementById('slide1Btn').value;
+
+            websiteData.slider.slide2.title = document.getElementById('slide2Title').value;
+            websiteData.slider.slide2.description = document.getElementById('slide2Desc').value;
+            websiteData.slider.slide2.buttonText = document.getElementById('slide2Btn').value;
+
+            websiteData.slider.slide3.title = document.getElementById('slide3Title').value;
+            websiteData.slider.slide3.description = document.getElementById('slide3Desc').value;
+            websiteData.slider.slide3.buttonText = document.getElementById('slide3Btn').value;
+
+            if (saveData()) {
+                showToast('Slider updated successfully!', 'success');
+                updateLivePreview();
+            }
+        }
+
+        function saveBanner() {
+            websiteData.banner.title = document.getElementById('bannerTitle').value;
+            websiteData.banner.description = document.getElementById('bannerDesc').value;
+            websiteData.banner.buttonText = document.getElementById('bannerBtn').value;
+
+            if (saveData()) {
+                showToast('Banner updated successfully!', 'success');
+                updateLivePreview();
+            }
+        }
+
+        function saveCounters() {
+            websiteData.counters.apps = parseInt(document.getElementById('appsCount').value) || 0;
+            websiteData.counters.consultants = parseInt(document.getElementById('consultantsCount').value) || 0;
+            websiteData.counters.awards = parseInt(document.getElementById('awardsCount').value) || 0;
+            websiteData.counters.clients = parseInt(document.getElementById('clientsCount').value) || 0;
+
+            if (saveData()) {
+                showToast('Counters updated successfully!', 'success');
+                updateCounterPreview();
+            }
+        }
+
+        function saveLocation() {
+            websiteData.location.address = document.getElementById('officeAddress').value;
+            websiteData.location.phone = document.getElementById('officePhone').value;
+            websiteData.location.email = document.getElementById('officeEmail').value;
+            websiteData.location.hours = document.getElementById('officeHours').value;
+            websiteData.location.mapsUrl = document.getElementById('mapsEmbedUrl').value;
+
+            if (saveData()) {
+                showToast('Location information updated successfully!', 'success');
+                updateLocationPreview();
+            }
+        }
+
+        function saveContact() {
+            websiteData.contact.companyName = document.getElementById('companyName').value;
+            websiteData.contact.email = document.getElementById('companyEmail').value;
+            websiteData.contact.phone = document.getElementById('companyPhone').value;
+            websiteData.contact.address = document.getElementById('companyAddress').value;
+            websiteData.contact.footerDesc = document.getElementById('footerDesc').value;
+
+            if (saveData()) {
+                showToast('Contact information updated successfully!', 'success');
+            }
+        }
+
+        function saveLogo() {
+            websiteData.brand.logoText = document.getElementById('logoText').value;
+            websiteData.brand.primaryColor = document.getElementById('primaryColor').value;
+            websiteData.brand.secondaryColor = document.getElementById('secondaryColor').value;
+            websiteData.brand.accentColor = document.getElementById('accentColor').value;
+
+            if (saveData()) {
+                showToast('Brand settings updated successfully!', 'success');
+                updateBrandPreview();
+            }
+        }
+
+        // Update previews
+        function updateLocationPreview() {
+            const addressElement = document.getElementById('previewAddress');
+            const phoneElement = document.getElementById('previewPhone');
+            const emailElement = document.getElementById('previewEmail');
+            const hoursElement = document.getElementById('previewHours');
+
+            if (addressElement) addressElement.textContent = websiteData.location.address;
+            if (phoneElement) phoneElement.textContent = websiteData.location.phone;
+            if (emailElement) emailElement.textContent = websiteData.location.email;
+            if (hoursElement) hoursElement.textContent = websiteData.location.hours.replace(/\n/g, ', ');
+        }
+
+        function updateCounterPreview() {
+            const appsElement = document.getElementById('previewAppsCount');
+            const consultantsElement = document.getElementById('previewConsultantsCount');
+            const awardsElement = document.getElementById('previewAwardsCount');
+            const clientsElement = document.getElementById('previewClientsCount');
+
+            if (appsElement) appsElement.textContent = websiteData.counters.apps + '+';
+            if (consultantsElement) consultantsElement.textContent = websiteData.counters.consultants;
+            if (awardsElement) awardsElement.textContent = websiteData.counters.awards;
+            if (clientsElement) clientsElement.textContent = websiteData.counters.clients;
+        }
+
+        function updateBrandPreview() {
+            const logoTextElement = document.getElementById('previewLogoText');
+            if (logoTextElement) logoTextElement.textContent = websiteData.brand.logoText;
+        }
+
+        // Live Preview setup
+        function setupLivePreview() {
+            // Slider preview
+            const slide1Title = document.getElementById('slide1Title');
+            const slide1Desc = document.getElementById('slide1Desc');
+            const bannerTitle = document.getElementById('bannerTitle');
+            const bannerDesc = document.getElementById('bannerDesc');
+
+            if (slide1Title) slide1Title.addEventListener('input', updateLivePreview);
+            if (slide1Desc) slide1Desc.addEventListener('input', updateLivePreview);
+            if (bannerTitle) bannerTitle.addEventListener('input', updateLivePreview);
+            if (bannerDesc) bannerDesc.addEventListener('input', updateLivePreview);
+        }
+
+        function updateLivePreview() {
+            const previewSliderTitle = document.getElementById('previewSliderTitle');
+            const previewSliderDesc = document.getElementById('previewSliderDesc');
+            const previewBannerTitle = document.getElementById('previewBannerTitle');
+            const previewBannerDesc = document.getElementById('previewBannerDesc');
+
+            const slide1Title = document.getElementById('slide1Title');
+            const slide1Desc = document.getElementById('slide1Desc');
+            const bannerTitle = document.getElementById('bannerTitle');
+            const bannerDesc = document.getElementById('bannerDesc');
+
+            if (previewSliderTitle && slide1Title) previewSliderTitle.textContent = slide1Title.value;
+            if (previewSliderDesc && slide1Desc) previewSliderDesc.textContent = slide1Desc.value;
+            if (previewBannerTitle && bannerTitle) previewBannerTitle.textContent = bannerTitle.value;
+            if (previewBannerDesc && bannerDesc) previewBannerDesc.textContent = bannerDesc.value;
+        }
+
+        // Service Management (existing functions)
+        function renderServices() {
+            const container = document.getElementById('servicesContainer');
+            container.innerHTML = '';
+
+            if (websiteData.services.length === 0) {
+                container.innerHTML = `
+                <div class="form-group" style="text-align: center; padding: 40px; color: #64748b;">
+                    <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <p>No services added yet. Click "Add New Service" to get started.</p>
+                </div>
+            `;
+                return;
+            }
+
+            websiteData.services.forEach(service => {
+                const serviceElement = document.createElement('div');
+                serviceElement.className = 'service-card';
+                serviceElement.style.cssText = `
+                border: 1px solid #e2e8f0;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                background: white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                transition: transform 0.2s ease;
+            `;
+
+                serviceElement.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <div style="width: 40px; height: 40px; border-radius: 8px; background: ${service.color}; display: flex; align-items: center; justify-content: center;">
+                                <i class="${service.icon}" style="color: white; font-size: 1.2rem;"></i>
+                            </div>
+                            <h4 style="margin: 0; color: #1e293b; font-size: 1.2rem;">${service.title}</h4>
+                        </div>
+                        <p style="margin: 0; color: #64748b; line-height: 1.5;">${service.description}</p>
+                        <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #64748b; font-size: 0.8rem;">
+                                <i class="${service.icon}"></i> ${service.icon}
+                            </span>
+                            <span style="width: 15px; height: 15px; border-radius: 50%; background: ${service.color}; display: inline-block;"></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                        <button class="btn btn-sm btn-edit" onclick="editService(${service.id})" style="padding: 6px 12px;">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteService(${service.id})" style="padding: 6px 12px;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+
+                container.appendChild(serviceElement);
+            });
+        }
+
+        function openServiceModal(serviceId = null) {
+            const modal = document.getElementById('serviceModal');
+            const title = document.getElementById('serviceModalTitle');
+            const form = document.getElementById('serviceForm');
+
+            if (serviceId) {
+                title.textContent = 'Edit Service';
+                const service = websiteData.services.find(s => s.id === serviceId);
+                document.getElementById('serviceId').value = service.id;
+                document.getElementById('serviceTitle').value = service.title;
+                document.getElementById('serviceDescription').value = service.description;
+                document.getElementById('serviceIcon').value = service.icon;
+                document.getElementById('serviceColor').value = service.color;
+            } else {
+                title.textContent = 'Add New Service';
+                form.reset();
+                document.getElementById('serviceId').value = '';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeServiceModal() {
+            document.getElementById('serviceModal').classList.add('hidden');
+        }
+
+        function saveService() {
+            const id = document.getElementById('serviceId').value;
+            const title = document.getElementById('serviceTitle').value;
+            const description = document.getElementById('serviceDescription').value;
+            const icon = document.getElementById('serviceIcon').value;
+            const color = document.getElementById('serviceColor').value;
+
+            if (!title || !description || !icon) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (id) {
+                // Update existing service
+                const serviceIndex = websiteData.services.findIndex(s => s.id == id);
+                if (serviceIndex !== -1) {
+                    websiteData.services[serviceIndex] = {
+                        id: parseInt(id),
+                        title,
+                        description,
+                        icon,
+                        color
+                    };
+                }
+            } else {
+                // Add new service
+                const newService = {
+                    id: Date.now(),
+                    title,
+                    description,
+                    icon,
+                    color
+                };
+                websiteData.services.push(newService);
+            }
+
+            saveData();
+            renderServices();
+            closeServiceModal();
+            showToast('Service saved successfully!', 'success');
+        }
+
+        function editService(serviceId) {
+            openServiceModal(serviceId);
+        }
+
+        function deleteService(serviceId) {
+            if (confirm('Are you sure you want to delete this service?')) {
+                websiteData.services = websiteData.services.filter(s => s.id !== serviceId);
+                saveData();
+                renderServices();
+                showToast('Service deleted successfully!', 'success');
+            }
+        }
+
+        // Project Management (existing functions)
+        function renderProjects() {
+            const container = document.getElementById('projectsContainer');
+            container.innerHTML = '';
+
+            if (websiteData.projects.length === 0) {
+                container.innerHTML = `
+                <div class="form-group" style="text-align: center; padding: 40px; color: #64748b;">
+                    <i class="fas fa-project-diagram" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <p>No projects added yet. Click "Add New Project" to get started.</p>
+                </div>
+            `;
+                return;
+            }
+
+            websiteData.projects.forEach(project => {
+                const projectElement = document.createElement('div');
+                projectElement.className = 'project-card';
+                projectElement.style.cssText = `
+                border: 1px solid #e2e8f0;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                background: white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                transition: transform 0.2s ease;
+            `;
+
+                // Category badge colors
+                const categoryColors = {
+                    'mobile': { bg: '#dbeafe', text: '#1e40af' },
+                    'software': { bg: '#dcfce7', text: '#166534' },
+                    'qa': { bg: '#fef3c7', text: '#92400e' },
+                    'ux': { bg: '#fce7f3', text: '#be185d' }
+                };
+
+                const category = categoryColors[project.category] || { bg: '#f1f5f9', text: '#475569' };
+
+                projectElement.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: #1e293b; font-size: 1.2rem;">${project.name}</h4>
+                            <span style="background: ${category.bg}; color: ${category.text}; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">
+                                ${project.category.toUpperCase()}
+                            </span>
+                        </div>
+                        <p style="margin: 0; color: #64748b; line-height: 1.5;">${project.description}</p>
+                        ${project.image ? `<div style="margin-top: 10px;"><small style="color: #64748b;">Image: ${project.image}</small></div>` : ''}
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                        <button class="btn btn-sm btn-edit" onclick="editProject(${project.id})" style="padding: 6px 12px;">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteProject(${project.id})" style="padding: 6px 12px;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+
+                container.appendChild(projectElement);
+            });
+        }
+
+        function openProjectModal(projectId = null) {
+            const modal = document.getElementById('projectModal');
+            const title = document.getElementById('projectModalTitle');
+            const form = document.getElementById('projectForm');
+
+            if (projectId) {
+                title.textContent = 'Edit Project';
+                const project = websiteData.projects.find(p => p.id === projectId);
+                document.getElementById('projectId').value = project.id;
+                document.getElementById('projectName').value = project.name;
+                document.getElementById('projectCategory').value = project.category;
+                document.getElementById('projectDescription').value = project.description;
+                document.getElementById('projectImage').value = project.image || '';
+            } else {
+                title.textContent = 'Add New Project';
+                form.reset();
+                document.getElementById('projectId').value = '';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').classList.add('hidden');
+        }
+
+        function saveProject() {
+            const id = document.getElementById('projectId').value;
+            const name = document.getElementById('projectName').value;
+            const category = document.getElementById('projectCategory').value;
+            const description = document.getElementById('projectDescription').value;
+            const image = document.getElementById('projectImage').value;
+
+            if (!name || !category || !description) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (id) {
+                // Update existing project
+                const projectIndex = websiteData.projects.findIndex(p => p.id == id);
+                if (projectIndex !== -1) {
+                    websiteData.projects[projectIndex] = {
+                        id: parseInt(id),
+                        name,
+                        category,
+                        description,
+                        image
+                    };
+                }
+            } else {
+                // Add new project
+                const newProject = {
+                    id: Date.now(),
+                    name,
+                    category,
+                    description,
+                    image
+                };
+                websiteData.projects.push(newProject);
+            }
+
+            saveData();
+            renderProjects();
+            closeProjectModal();
+            showToast('Project saved successfully!', 'success');
+        }
+
+        function editProject(projectId) {
+            openProjectModal(projectId);
+        }
+
+        function deleteProject(projectId) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                websiteData.projects = websiteData.projects.filter(p => p.id !== projectId);
+                saveData();
+                renderProjects();
+                showToast('Project deleted successfully!', 'success');
+            }
+        }
+
+        // Team Management (existing functions)
+        function renderTeam() {
+            const container = document.getElementById('teamContainer');
+            container.innerHTML = '';
+
+            if (websiteData.team.length === 0) {
+                container.innerHTML = `
+                <div class="form-group" style="text-align: center; padding: 40px; color: #64748b;">
+                    <i class="fas fa-users" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                    <p>No team members added yet. Click "Add Team Member" to get started.</p>
+                </div>
+            `;
+                return;
+            }
+
+            websiteData.team.forEach(member => {
+                const memberElement = document.createElement('div');
+                memberElement.className = 'team-card';
+                memberElement.style.cssText = `
+                border: 1px solid #e2e8f0;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                background: white;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                transition: transform 0.2s ease;
+            `;
+
+                memberElement.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                            <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #3b82f6, #1e40af); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                                ${member.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 5px 0; color: #1e293b; font-size: 1.2rem;">${member.name}</h4>
+                                <p style="margin: 0; color: #3b82f6; font-weight: 500;">${member.position}</p>
+                            </div>
+                        </div>
+                        <p style="margin: 10px 0 0 0; color: #64748b; line-height: 1.5; font-size: 0.9rem;">${member.bio}</p>
+                        ${member.avatar ? `<div style="margin-top: 10px;"><small style="color: #64748b;">Avatar: ${member.avatar}</small></div>` : ''}
+                    </div>
+                    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                        <button class="btn btn-sm btn-edit" onclick="editTeamMember(${member.id})" style="padding: 6px 12px;">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteTeamMember(${member.id})" style="padding: 6px 12px;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+
+                container.appendChild(memberElement);
+            });
+        }
+
+        function openTeamModal(memberId = null) {
+            const modal = document.getElementById('teamModal');
+            const title = document.getElementById('teamModalTitle');
+            const form = document.getElementById('teamForm');
+
+            if (memberId) {
+                title.textContent = 'Edit Team Member';
+                const member = websiteData.team.find(m => m.id === memberId);
+                document.getElementById('teamMemberId').value = member.id;
+                document.getElementById('memberName').value = member.name;
+                document.getElementById('memberPosition').value = member.position;
+                document.getElementById('memberBio').value = member.bio;
+                document.getElementById('memberAvatar').value = member.avatar || '';
+            } else {
+                title.textContent = 'Add Team Member';
+                form.reset();
+                document.getElementById('teamMemberId').value = '';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeTeamModal() {
+            document.getElementById('teamModal').classList.add('hidden');
+        }
+
+        function saveTeamMember() {
+            const id = document.getElementById('teamMemberId').value;
+            const name = document.getElementById('memberName').value;
+            const position = document.getElementById('memberPosition').value;
+            const bio = document.getElementById('memberBio').value;
+            const avatar = document.getElementById('memberAvatar').value;
+
+            if (!name || !position || !bio) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+
+            if (id) {
+                // Update existing member
+                const memberIndex = websiteData.team.findIndex(m => m.id == id);
+                if (memberIndex !== -1) {
+                    websiteData.team[memberIndex] = {
+                        id: parseInt(id),
+                        name,
+                        position,
+                        bio,
+                        avatar
+                    };
+                }
+            } else {
+                // Add new member
+                const newMember = {
+                    id: Date.now(),
+                    name,
+                    position,
+                    bio,
+                    avatar
+                };
+                websiteData.team.push(newMember);
+            }
+
+            saveData();
+            renderTeam();
+            closeTeamModal();
+            showToast('Team member saved successfully!', 'success');
+        }
+
+        function editTeamMember(memberId) {
+            openTeamModal(memberId);
+        }
+
+        function deleteTeamMember(memberId) {
+            if (confirm('Are you sure you want to delete this team member?')) {
+                websiteData.team = websiteData.team.filter(m => m.id !== memberId);
+                saveData();
+                renderTeam();
+                showToast('Team member deleted successfully!', 'success');
+            }
+        }
+
+        // Trigger website update
+        function triggerWebsiteUpdate() {
+            // Create a custom event to notify the website
+            const event = new CustomEvent('websiteDataUpdated', {
+                detail: websiteData
+            });
+            window.dispatchEvent(event);
+
+            // Also update localStorage for cross-tab communication
+            localStorage.setItem('genuitywebCMSData', JSON.stringify({
+                data: websiteData,
+                timestamp: Date.now()
+            }));
+
+            console.log("Website data updated and synced");
+        }
+
+        // Sync to Website
+        function syncToWebsite() {
+            if (saveData()) {
+                showToast('All changes have been synced to the website!', 'success');
+
+                // Open main website in new tab to see changes
+                setTimeout(() => {
+                    window.open('index.html', '_blank');
+                }, 1000);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('cmsLoggedIn');
+            localStorage.removeItem('genuitywebUser');
+            window.location.href = 'index.html';
+        }
+
+        // Toast Notification
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = message;
+                toast.className = `toast ${type} show`;
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // Modal event listeners
+        document.getElementById('closeServiceModal').addEventListener('click', closeServiceModal);
+        document.getElementById('cancelServiceBtn').addEventListener('click', closeServiceModal);
+        document.getElementById('saveServiceBtn').addEventListener('click', saveService);
+
+        document.getElementById('closeProjectModal').addEventListener('click', closeProjectModal);
+        document.getElementById('cancelProjectBtn').addEventListener('click', closeProjectModal);
+        document.getElementById('saveProjectBtn').addEventListener('click', saveProject);
+
+        document.getElementById('closeTeamModal').addEventListener('click', closeTeamModal);
+        document.getElementById('cancelTeamBtn').addEventListener('click', closeTeamModal);
+        document.getElementById('saveTeamMemberBtn').addEventListener('click', saveTeamMember);
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function (event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
